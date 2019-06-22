@@ -1,15 +1,21 @@
-module Main(main) where
+-- | Jogo no estilo Breakout implementado em Haskell.
+module Main where
 
 import Graphics.Gloss
+import Graphics.Gloss.Interface.IO.Game
+import Window
+import Game
+import Blocks
+import Control.Concurrent
+import Control.Concurrent.STM
 
-window :: Display
-window = InWindow "Nice Window" (200, 200) (10, 10)
-
-background :: Color
-background = white
-
-drawing :: Picture
-drawing = circle 80
-
+fps :: Int
+fps = 60
+        
 main :: IO ()
-main = display window background drawing
+main = do 
+    bl1 <- atomically $ newTVar (map genBlock1 [0..39])
+
+    let iState = initialState bl1
+    
+    playIO window background fps iState render handleKeys update
