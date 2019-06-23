@@ -63,13 +63,13 @@ paddleBounce seconds bp@(x,y) bv@(vx, vy) pp pv =
 
 
 -- Changes ball velocity when hitting a block
-blockCollision :: Float -> Position -> Position -> Blocks -> (Position, PowerUp)
-blockCollision seconds v@(vx,vy) bp@(xball, yball) [] = (v, None)
+blockCollision :: Float -> Position -> Position -> Blocks -> (Position)
+blockCollision seconds v@(vx,vy) bp@(xball, yball) [] = (v)
 blockCollision seconds v@(vx,vy) bp@(xball, yball) (b:bs)
-    | hitCornerH xb && overlapY yb = ((-vx,  vy), typePower b)
-    | hitCornerV yb && overlapX xb = (( vx, -vy), typePower b)
-    | hitSide    xb && overlapY yb = ((-vx,  vy), typePower b)
-    | hitTop     yb && overlapX xb = (( vx, -vy), typePower b)
+    | hitCornerH xb && overlapY yb = ((-vx,  vy))
+    | hitCornerV yb && overlapX xb = (( vx, -vy))
+    | hitSide    xb && overlapY yb = ((-vx,  vy))
+    | hitTop     yb && overlapX xb = (( vx, -vy))
     | otherwise                    = blockCollision seconds v bp bs
     where
         (xb, yb) = blockPos b
@@ -85,7 +85,7 @@ blockCollision seconds v@(vx,vy) bp@(xball, yball) (b:bs)
 removeBlocks :: Float ->  Blocks -> Position -> Position -> Blocks
 removeBlocks seconds bs (xball, yball) (vx, vy) = filter (not. hit) bs
     where 
-        hit (Block (xb, yb) c) = overlapBallX (range xb bHalfWidth)
+        hit (Block (xb, yb)) = overlapBallX (range xb bHalfWidth)
                               && overlapBallY (range yb bHalfHeight)
         xballRange             = range (xball) ballSize
         yballRange             = range (yball) ballSize

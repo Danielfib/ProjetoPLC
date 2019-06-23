@@ -8,6 +8,7 @@ import Ball
 import Blocks
 import Player
 import Collision
+import PowerUp
 
 data GameStatus = Game
     { ballLoc   :: Position -- (x, y) ball coord
@@ -17,12 +18,13 @@ data GameStatus = Game
     , playerAcc :: Float    -- player acceleration
     , isPaused  :: Bool     
     , blocks    :: TVar Blocks   -- blocks on screen
+    , powerUps  :: TVar PowerUp
     , gameStat  :: Int      -- game status: 0 - in game, 1 = victory, -1 = loss.    
     }
 
 -- initial game state
-initialState :: TVar Blocks -> GameStatus
-initialState b1 = Game
+initialState :: TVar Blocks -> TVar PowerUp -> GameStatus
+initialState b1 pu = Game
     { ballLoc   = (0 , -100)
     , ballVel   = ballVelocity
     , playerLoc = 0
@@ -30,6 +32,7 @@ initialState b1 = Game
     , playerAcc = playerAcceleration
     , isPaused  = True
     , blocks    = b1
+    , powerUps  = pu
     , gameStat  = 0
     }
 
@@ -66,7 +69,7 @@ updatePaddle seconds game = return $ game { ballVel = paddleBounce seconds bp bv
 
 updateBlocks :: Float -> GameStatus -> IO (GameStatus)
 updateBlocks seconds game = do
-    ((v1x, v1y), pow1) <- atomically $ do
+    ((v1x, v1y)) <- atomically $ do
         bl1 <- readTVar $ blocks game
         let (ballVel', p1) = blockCollision seconds bv bp bl1
         writeTVar (blocks game) (removeBlocks seconds bl1 bp bv)
@@ -78,16 +81,6 @@ updateBlocks seconds game = do
         where -- update ball velocity when hit block
             bv = ballVel game
             bp = ballLoc game
-
-
-createPowerUp :: GameStatus -> IO (GameStatus)
-createPowerUp game = do
-    atomically $ do
-        bl1 <- readTVar $ blocks game
-        if length bl1 == 0 then return () else do
-            let bl1' = head bl1
-            writeTVar (blocks game) ((bl1' {typePower = FastBall}) : tail bl1)
-    return $ game 
     
 
 -- | updates game state

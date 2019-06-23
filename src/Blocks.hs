@@ -4,6 +4,9 @@ import Graphics.Gloss
 import Ball
 import Window
 
+blocksColor :: Color
+blocksColor = green
+
 blocksPerRow :: Int
 blocksPerRow = 10
 
@@ -16,12 +19,9 @@ bHalfWidth = (1 + fst blockSize) / 2
 bHalfHeight :: Float
 bHalfHeight = (1 + snd blockSize) / 2
 
-data PowerUp = None | BigBar | SmallBar | FastBall | SlowBall deriving Eq
-
 data BlockInfo = Block
     { blockPos :: Position      -- (x, y) coordenada do bloco.
     -- , blockCol :: Color     -- cor do bloco.
-    , typePower :: PowerUp      --
     }
 
 type Blocks = [BlockInfo]
@@ -32,19 +32,14 @@ hasBlocks blocks = not $ length blocks == 0
 drawBlocks :: Blocks -> Picture
 drawBlocks bs = pictures $ [drawBlock x | x <- bs]
     where
-        drawBlock (Block (x, y) power) = translate x y $ color col $ rectangleSolid w h
-            where
-                col | power == None = green
-                    | power == BigBar = orange
-                    | power == SmallBar = red
-                    | power == FastBall = blue
-                    | power == SlowBall = yellow
+        drawBlock (Block (x, y) ) = translate x y $ color blocksColor $ rectangleSolid w h
+            
         (w, h)                       = blockSize
         
 
 -- generate blocks
 genBlock :: Int -> Position -> BlockInfo
-genBlock n (px, py) = Block { blockPos = pos, typePower = None }
+genBlock n (px, py) = Block { blockPos = pos }
     where
         pos = (bx, by)
         bx = px + bHalfWidth + 6 + fromIntegral x * (fst blockSize + 1)
