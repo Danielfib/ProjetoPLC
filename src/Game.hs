@@ -19,7 +19,7 @@ data GameStatus = Game
     , playerAcc :: Float    -- player acceleration
     , isPaused  :: Bool     
     , blocks    :: TVar Blocks   -- blocks on screen
-    , powerUps  :: TVar PowerUp
+    , powerUp  :: TVar PowerUp
     , gameStat  :: Int      -- game status: 0 - in game, 1 = victory, -1 = loss.  
     , gameLevel :: Int -- Current level of the game  
     }
