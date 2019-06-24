@@ -25,7 +25,7 @@ powerUpMonitor pu = do
         
 main :: IO ()
 main = do 
-    bl1 <- atomically $ newTVar (map genBlock1 [0..39])
+    bl1 <- atomically $ newTVar (map genBlock1 [0..29])
     pu <- atomically $ newTVar (initializePowerUps)
     let iState = initialState bl1 pu
     forkIO $ powerUpMonitor pu

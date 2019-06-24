@@ -49,14 +49,17 @@ powerUpCollision seconds playerX (x, y) = yCollision && xCollision
         xCollision = x <= playerX + halfPlayerWidth
                   && x >= playerX - halfPlayerWidth
 
-pickedUpPowerUP :: Float -> Float -> PowerUp -> IO ()
-pickedUpPowerUP seconds playerX (PUI (x, y) a) = do
-    if powerUpCollision seconds playerX (x,y) 
-    then do -- apply power up
-        print("opa")
-        --if a == BigBar then do playerWidth = 100
-        --else playerWidth = 40    
-    else return()
+pickedUpPowerUP :: Float -> Float -> PowerUp -> Bool
+pickedUpPowerUP seconds playerX (PUI (x, y) a) 
+    | powerUpCollision seconds playerX (x,y) = True
+    | otherwise                              = False
+    -- if powerUpCollision seconds playerX (x,y) 
+    -- then do -- apply power up
+    --     --print("opa")
+    --     return True
+    --     --if a == BigBar then do playerWidth = 100
+    --     --else playerWidth = 40    
+    -- else return False
 
 -- if did hit a block
 inCorner :: (Num a, Ord a) => a -> (a, a) -> (a, a) -> Bool

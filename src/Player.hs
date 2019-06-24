@@ -12,6 +12,9 @@ playerColor = red
 playerWidth :: Float
 playerWidth = 60
 
+buffedPlayerWidth :: Float
+buffedPlayerWidth = 160
+
 halfPlayerWidth :: Float
 halfPlayerWidth = playerWidth / 2
 

@@ -6,7 +6,7 @@ import Graphics.Gloss
 type Position = (Float, Float)
 
 ballVelocity :: (Float, Float)
-ballVelocity = (50, -300)
+ballVelocity = (50, -200)
 
 ballVelocity2 :: (Float, Float)
 ballVelocity2 = (60, -360)

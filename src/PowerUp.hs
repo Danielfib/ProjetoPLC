@@ -6,7 +6,6 @@ import Window
 import Control.Concurrent
 import Control.Concurrent.STM
 
-
 data PowerUpEnum = None | BigBar | SmallBar | FastBall | SlowBall deriving Eq
 
 data PowerUp = PUI Position PowerUpEnum
