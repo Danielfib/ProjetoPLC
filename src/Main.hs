@@ -12,17 +12,14 @@ import Control.Concurrent.STM
 fps :: Int
 fps = 60
 
---power up collision will be checked on game
---Another thread, that check existence of power up on screen to create another
+--resets power up (another) on random X
 powerUpMonitor :: TVar PowerUp -> IO ()
 powerUpMonitor pu = do
+    print("olha o powerup vindo ae")
     atomically $ do 
         pu1 <- readTVar pu
-        -- == none, create new power up 
-        if ((getPowerUpType pu1) == None) 
-            then writeTVar pu (PUI (-50,-50) BigBar)
-            else return()
-    threadDelay 1000
+        writeTVar pu (PUI (-50,-50) BigBar)
+    threadDelay 10000000
     powerUpMonitor pu
 
         

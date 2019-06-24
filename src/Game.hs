@@ -54,6 +54,7 @@ updateBall seconds game = return $ game { ballLoc = moveBall seconds pos v }
 updatePowerUp :: Float -> GameStatus -> IO (GameStatus)
 updatePowerUp seconds game = do
     aux <- atomically $ readTVar $ powerUp game
+    pickedUpPowerUP seconds (playerLoc game) aux
     --newPosition <- movePowerUp seconds aux
     atomically $ writeTVar (powerUp game) (PUI (movePowerUp seconds aux) (getPowerUpType aux))
     return $ game 

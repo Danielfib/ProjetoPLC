@@ -12,7 +12,7 @@ data PowerUpEnum = None | BigBar | SmallBar | FastBall | SlowBall deriving Eq
 data PowerUp = PUI Position PowerUpEnum
 
 powerUpSpeed :: Float
-powerUpSpeed = 10
+powerUpSpeed = 30
 
 powerUpSize :: Float
 powerUpSize = 5

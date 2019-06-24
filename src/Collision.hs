@@ -4,6 +4,7 @@ import Ball
 import Blocks
 import Window
 import Player
+import PowerUp
 
 funIf :: Bool -> a -> a -> a
 funIf b x y = if b then x else y
@@ -48,14 +49,14 @@ powerUpCollision seconds playerX (x, y) = yCollision && xCollision
         xCollision = x <= playerX + halfPlayerWidth
                   && x >= playerX - halfPlayerWidth
 
-pickedUpPowerUP :: Float -> Float -> Position -> IO ()
-pickedUpPowerUP seconds playerX (x,y) = do
+pickedUpPowerUP :: Float -> Float -> PowerUp -> IO ()
+pickedUpPowerUP seconds playerX (PUI (x, y) a) = do
     if powerUpCollision seconds playerX (x,y) 
     then do -- apply power up
         print("opa")
+        --if a == BigBar then do playerWidth = 100
+        --else playerWidth = 40    
     else return()
-    
-
 
 -- if did hit a block
 inCorner :: (Num a, Ord a) => a -> (a, a) -> (a, a) -> Bool
