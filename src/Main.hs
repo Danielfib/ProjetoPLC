@@ -6,6 +6,7 @@ import Window
 import Game
 import Blocks
 import PowerUp
+import Control.Monad.Random
 import Control.Concurrent
 import Control.Concurrent.STM
 
@@ -13,22 +14,28 @@ fps :: Int
 fps = 60
 
 --resets power up (another) on random X
-powerUpMonitor :: TVar PowerUp -> IO ()
-powerUpMonitor pu = do
+powerUpMonitor :: TVar PowerUp -> TVar Bool-> IO ()
+powerUpMonitor pu flag = do
     print("olha o powerup vindo ae")
-    atomically $ do 
-        pu1 <- readTVar pu
-        writeTVar pu (PUI (-50,-50) BigBar)
+    atomically $ do         
+        spawnFlag <- readTVar flag
+        if spawnFlag 
+            then writeTVar pu (PUI (-100,-50) BigBar)
+            else writeTVar pu (PUI (100,-50) BigBar)
+        writeTVar flag (not spawnFlag)
     threadDelay 10000000
-    powerUpMonitor pu
+    powerUpMonitor pu flag
 
         
 main :: IO ()
 main = do 
+    powerUpSpawnFlag <- atomically $ newTVar (False)
+
     bl1 <- atomically $ newTVar (map genBlock1 [0..29])
     pu <- atomically $ newTVar (initializePowerUps)
     let iState = initialState bl1 pu
-    forkIO $ powerUpMonitor pu
+    
+    forkIO $ powerUpMonitor pu powerUpSpawnFlag
 
     playIO window background fps iState render handleKeys update
 

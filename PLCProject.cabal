@@ -21,6 +21,6 @@ executable PLCProject
   main-is:             Main.hs
   other-modules:       Window, Ball, Blocks, Player, Collision, Game, PowerUp
   -- other-extensions:
-  build-depends:       base ^>=4.12.0.0, gloss==1.13.*, stm, random
+  build-depends:       base ^>=4.12.0.0, gloss==1.13.*, stm, MonadRandom
   -- hs-source-dirs:
   default-language:    Haskell2010
