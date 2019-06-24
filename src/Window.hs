@@ -47,12 +47,19 @@ walls = pictures [leftWall, rightWall, topWall]
 renderTxt :: Color -> String -> Picture
 renderTxt col msg = translate (-100) 180 $ scale 0.2 0.2 $ color col $ Text msg
 
-curMsg :: Int -> Bool -> Picture
-curMsg   0  paused = pauseMsg paused
-curMsg (-1) paused = lostMsg 1
-curMsg   1  paused = winMsg 1
+curMsg :: Int -> Bool -> Int-> Picture
+curMsg (-1) paused _ = lostMsg 1
+curMsg   1  paused 3 = winMsg 1
+curMsg 0 True 1 = pauseMsg True
+curMsg 0 paused 1 = winMsg 2
+curMsg 0 paused 2 = winMsg 3
+curMsg 0 paused 3 = winMsg 4
+curMsg 0 paused  _ = pauseMsg paused
 
 winMsg    1    = renderTxt green "You won! Press R to play again"
+winMsg    2    = renderTxt green "Level 1"
+winMsg    3    = renderTxt green "Level 2"
+winMsg    4    = renderTxt green "Level 3"
 lostMsg   1    = renderTxt red   "You lost!"
 pauseMsg True  = renderTxt blue  "Press p to play!"
 pauseMsg False = renderTxt blue  ""
