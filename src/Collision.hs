@@ -39,6 +39,24 @@ paddleCollision seconds playerX (x, y) (vx, vy) = yCollision && xCollision
         xCollision = (x + vx*seconds)  >= playerX - halfPlayerWidth 
                   && (x + vx*seconds)  <= playerX + halfPlayerWidth
 
+--check power up collision with paddle
+powerUpCollision :: Float -> Float -> Position -> Bool
+powerUpCollision seconds playerX (x, y) = yCollision && xCollision
+    where 
+        yCollision = y <= playerY + halfPlayerHeight
+                  && y >= playerY - halfPlayerHeight
+        xCollision = x <= playerX + halfPlayerWidth
+                  && x >= playerX - halfPlayerWidth
+
+pickedUpPowerUP :: Float -> Float -> Position -> IO ()
+pickedUpPowerUP seconds playerX (x,y) = do
+    if powerUpCollision seconds playerX (x,y) 
+    then do -- apply power up
+        print("opa")
+    else return()
+    
+
+
 -- if did hit a block
 inCorner :: (Num a, Ord a) => a -> (a, a) -> (a, a) -> Bool
 inCorner x (xmin, xmax) (rmin, rmax) = (xmin > x + rmin && xmin < x + rmax)
@@ -60,7 +78,6 @@ paddleBounce seconds bp@(x,y) bv@(vx, vy) pp pv =
     else bv
     where
         newVx = -250 + 500* (x - (pp - halfPlayerWidth))/playerWidth
-
 
 -- Changes ball velocity when hitting a block
 blockCollision :: Float -> Position -> Position -> Blocks -> (Position)

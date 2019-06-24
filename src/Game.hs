@@ -34,7 +34,7 @@ initialState b1 pu = Game
     , playerAcc = playerAcceleration
     , isPaused  = True
     , blocks    = b1
-    , powerUps  = pu
+    , powerUp   = pu
     , gameStat  = 0
     , gameLevel = 1
     }
@@ -42,7 +42,8 @@ initialState b1 pu = Game
 render :: GameStatus -> IO (Picture)
 render game = do
     bl1 <- atomically $ readTVar $ blocks game
-    return (pictures [ballPics, walls, playerPics, pictures[drawBlocks bl1], msgPic])
+    powerUpAux <- atomically $ readTVar $ powerUp game
+    return (pictures [ballPics, walls, playerPics, pictures[drawBlocks bl1], msgPic, pictures [ powerUpBall $ (getPowerUpLocation(powerUpAux)) ]])
     where
         ballPics   = pictures [ ball $ ballLoc game ]
         playerPics = pictures [ mkPlayer $ playerLoc game ]
@@ -53,6 +54,13 @@ updateBall seconds game = return $ game { ballLoc = moveBall seconds pos v }
     where pos = ballLoc game
           v   = ballVel game
 
+updatePowerUp :: Float -> GameStatus -> IO (GameStatus)
+updatePowerUp seconds game = do
+    aux <- atomically $ readTVar $ powerUp game
+    --newPosition <- movePowerUp seconds aux
+    atomically $ writeTVar (powerUp game) (PUI (movePowerUp seconds aux) (getPowerUpType aux))
+    return $ game 
+          
 updatePlayer :: Float -> GameStatus -> IO (GameStatus)
 updatePlayer seconds game = return $ game { playerLoc = movePlayer seconds x v }
     where x = playerLoc game
@@ -102,7 +110,8 @@ update seconds game = do
                 x3 <- updateWall seconds x2
                 x4 <- updateBlocks seconds x3
                 x5 <- updatePaddle seconds x4
-                return x5
+                x6 <- updatePowerUp seconds x5
+                return x6
     where
         dropped 1  = y < (-halfHeight) - 5
         y          = snd $ ballLoc game
@@ -184,11 +193,5 @@ invPause game = game { isPaused = isPaused' }
     where
         isPaused' = not $ isPaused game
 
-incLevel :: GameStatus -> GameStatus
-incLevel game = game { gameLevel = gameLevel' }
-    where
-        gameLevel' = succ (gameLevel game)
-    
-{- printGameLevel :: GameStatus -> IO()
-printGameLevel game = print (gameLevel game)
- -}
+--applyPowerUp :: PowerUp -> ()
+--applyPowerUp pu = do
