@@ -8,6 +8,9 @@ type Position = (Float, Float)
 ballVelocity :: (Float, Float)
 ballVelocity = (50, -300)
 
+ballVelocity2 :: (Float, Float)
+ballVelocity2 = (60, -360)
+
 
 ballSize :: Float
 ballSize = 10

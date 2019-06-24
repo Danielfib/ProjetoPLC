@@ -9,6 +9,7 @@ import Blocks
 import Player
 import Collision
 import PowerUp
+import Data.Typeable
 
 data GameStatus = Game
     { ballLoc   :: Position -- (x, y) ball coord
@@ -19,7 +20,8 @@ data GameStatus = Game
     , isPaused  :: Bool     
     , blocks    :: TVar Blocks   -- blocks on screen
     , powerUps  :: TVar PowerUp
-    , gameStat  :: Int      -- game status: 0 - in game, 1 = victory, -1 = loss.    
+    , gameStat  :: Int      -- game status: 0 - in game, 1 = victory, -1 = loss.  
+    , gameLevel :: Int -- Current level of the game  
     }
 
 -- initial game state
@@ -34,6 +36,7 @@ initialState b1 pu = Game
     , blocks    = b1
     , powerUps  = pu
     , gameStat  = 0
+    , gameLevel = 1
     }
 
 render :: GameStatus -> IO (Picture)
@@ -43,7 +46,7 @@ render game = do
     where
         ballPics   = pictures [ ball $ ballLoc game ]
         playerPics = pictures [ mkPlayer $ playerLoc game ]
-        msgPic     = curMsg (gameStat game) (isPaused game) 
+        msgPic     = curMsg (gameStat game) (isPaused game) (gameLevel game)
 
 updateBall :: Float -> GameStatus -> IO (GameStatus)
 updateBall seconds game = return $ game { ballLoc = moveBall seconds pos v }
@@ -87,8 +90,12 @@ updateBlocks seconds game = do
 update :: Float -> GameStatus -> IO (GameStatus)
 update seconds game = do
     bl1 <- atomically $ readTVar $ blocks game
+    --printGameLevel game
     if isPaused game then return game else do
-        if (not $ hasBlocks bl1) then return $ game { gameStat = 1} else do
+        if (not $ hasBlocks bl1) then 
+            --return $ game { gameStat = 1, gameLevel=succ(gameLevel game), isPaused=True} 
+            nextState game (gameLevel game)
+        else do
             if dropped 1 then return $ game { gameStat = (-1) } else do 
                 x1 <- updateBall seconds game
                 x2 <- updatePlayer seconds x1
@@ -99,6 +106,37 @@ update seconds game = do
     where
         dropped 1  = y < (-halfHeight) - 5
         y          = snd $ ballLoc game
+nextState :: GameStatus -> Int -> IO(GameStatus)
+nextState game currentLevel= do
+    if (currentLevel==1) then do
+        atomically $ do
+            writeTVar (blocks game) (map genBlock1 [0..59])
+            return ()
+        return ( game 
+            { ballLoc   = (0, -100)
+            , ballVel   = ballVelocity
+            , playerLoc = 0
+            , playerVel = 0
+            , playerAcc = playerAcceleration
+            , isPaused  = True
+            , gameStat  = 0
+            , gameLevel = succ(currentLevel)
+            } )
+    else do
+        atomically $ do
+            writeTVar (blocks game) (map genBlock1 [0..59])
+            return ()
+        return ( game 
+            { ballLoc   = (0, -100)
+            , ballVel   = ballVelocity2
+            , playerLoc = 0
+            , playerVel = 0
+            , playerAcc = playerAcceleration
+            , isPaused  = True
+            , gameStat  = 0
+            , gameLevel = succ(currentLevel)
+            } )
+
 
 handleKeys :: Event -> GameStatus -> IO (GameStatus)
 -- restarting game
@@ -114,9 +152,11 @@ handleKeys (EventKey (Char 'r') Down _ _) game = do
         , playerAcc = playerAcceleration
         , isPaused  = True
         , gameStat  = 0
+        , gameLevel = 1
         } )
 -- Tecla 'p' pausa e despausa o jogo.
 handleKeys (EventKey (Char 'p') Down _ _) game = return $ invPause game
+handleKeys (EventKey (Char 'n') Down _ _) game = nextState game (gameLevel game)
 -- Moving player to the left
 handleKeys (EventKey (SpecialKey KeyLeft) Down _ _) game = return $ decVel game 1
 handleKeys (EventKey (SpecialKey KeyLeft) Up _ _) game = return $ incVel game 1
@@ -143,3 +183,12 @@ invPause :: GameStatus -> GameStatus
 invPause game = game { isPaused = isPaused' }
     where
         isPaused' = not $ isPaused game
+
+incLevel :: GameStatus -> GameStatus
+incLevel game = game { gameLevel = gameLevel' }
+    where
+        gameLevel' = succ (gameLevel game)
+    
+{- printGameLevel :: GameStatus -> IO()
+printGameLevel game = print (gameLevel game)
+ -}

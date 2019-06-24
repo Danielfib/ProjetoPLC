@@ -30,8 +30,9 @@ main :: IO ()
 main = do 
     bl1 <- atomically $ newTVar (map genBlock1 [0..39])
     pu <- atomically $ newTVar (initializePowerUps)
-
     let iState = initialState bl1 pu
     --forkIO $ powerUpMonitor pu
 
     playIO window background fps iState render handleKeys update
+
+
