@@ -20,7 +20,7 @@ powerUpMonitor pu = do
         pu1 <- readTVar pu
         -- == none, create new power up 
         if ((getPowerUpType pu1) == None) 
-            then writeTVar pu (PUI (0,0) BigBar)
+            then writeTVar pu (PUI (-50,-50) BigBar)
             else return()
     threadDelay 1000
     powerUpMonitor pu
@@ -32,6 +32,6 @@ main = do
     pu <- atomically $ newTVar (initializePowerUps)
 
     let iState = initialState bl1 pu
-    --forkIO $ powerUpMonitor pu
+    forkIO $ powerUpMonitor pu
 
     playIO window background fps iState render handleKeys update
