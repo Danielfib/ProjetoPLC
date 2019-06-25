@@ -45,7 +45,7 @@ render :: GameStatus -> IO (Picture)
 render game = do
     bl1 <- atomically $ readTVar $ blocks game
     powerUpAux <- atomically $ readTVar $ powerUp game
-    return (pictures [ballPics, walls, pictures [ powerUpBall $ (getPowerUpLocation(powerUpAux)) ], playerPics, pictures[drawBlocks bl1], msgPic])
+    return (pictures [ballPics, walls, pictures[drawBlocks bl1], pictures [ powerUpBall $ (getPowerUpLocation(powerUpAux)) ], playerPics, msgPic])
     where
         ballPics   = pictures [ ball $ ballLoc game ]
         playerPics = pictures [ mkPlayer $ playerLoc game ]

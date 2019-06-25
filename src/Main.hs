@@ -21,10 +21,10 @@ powerUpMonitor pu flag newFlag = do
         writeTVar newFlag True
         spawnFlag <- readTVar flag
         if spawnFlag 
-            then writeTVar pu (PUI (-100,0) FastBall)
-            else writeTVar pu (PUI (100,0) SlowBall)
+            then writeTVar pu (PUI (-100, 200) FastBall)
+            else writeTVar pu (PUI (100, 200) SlowBall)
         writeTVar flag (not spawnFlag)
-    threadDelay 10000000
+    threadDelay 15000000
     powerUpMonitor pu flag newFlag
 
         
