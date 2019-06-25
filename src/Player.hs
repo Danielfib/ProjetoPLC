@@ -19,13 +19,13 @@ halfPlayerWidth :: Float
 halfPlayerWidth = playerWidth / 2
 
 playerHeight :: Float
-playerHeight = 10
+playerHeight = 15
 
 halfPlayerHeight :: Float
 halfPlayerHeight = playerHeight / 2
 
 playerY :: Float
-playerY = -halfHeight + 20
+playerY = -halfHeight -- + 20
 
 -- Player rectangle
 mkPlayer :: Float -> Picture

@@ -14,14 +14,14 @@ powerUpSpeed :: Float
 powerUpSpeed = 150
 
 powerUpSize :: Float
-powerUpSize = 5
+powerUpSize = 15
 
 powerUpColor :: Color
-powerUpColor = orange
+powerUpColor = yellow
 
 -- create circle draw
 powerUpBall :: Position -> Picture
-powerUpBall (x, y) = translate x y $ color powerUpColor $ circleSolid powerUpSize
+powerUpBall (x, y) = translate x y $ color powerUpColor $ rotate 45 (rectangleSolid powerUpSize powerUpSize)
 
 -- update power up position (falling)
 movePowerUp :: Float -> PowerUp -> Position

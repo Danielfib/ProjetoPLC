@@ -11,12 +11,6 @@ ballVelocity = (45, -200)
 ballVelocity2 :: (Float, Float)
 ballVelocity2 = (55, 300)
 
-ballVelocitySlow :: (Float, Float)
-ballVelocitySlow = (35, 150)
-
-ballVelocityFast :: (Float, Float)
-ballVelocityFast = (65, 400)
-
 ballVelocityIncrement :: (Float, Float)
 ballVelocityIncrement = (20, 100)
 
@@ -46,9 +40,8 @@ sumOrMinusDecrement (x, y) (i, j)
     | (x >= 0 && y < 0)     = (x-i, y+j)
     | (x >= 0 && y >= 0)    = (x-i, y-j)
 
-
 ballSize :: Float
-ballSize = 10
+ballSize = 5
 
 ballColor :: Color
 ballColor = white
