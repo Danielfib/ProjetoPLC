@@ -10,7 +10,7 @@ playerColor :: Color
 playerColor = red
 
 playerWidth :: Float
-playerWidth = 200
+playerWidth = 150
 
 buffedPlayerWidth :: Float
 buffedPlayerWidth = 160
