@@ -14,28 +14,31 @@ fps :: Int
 fps = 60
 
 --resets power up (another) on random X
-powerUpMonitor :: TVar PowerUp -> TVar Bool-> IO ()
-powerUpMonitor pu flag = do
-    print("olha o powerup vindo ae")
+powerUpMonitor :: TVar PowerUp -> TVar Bool -> TVar Bool -> IO ()
+powerUpMonitor pu flag newFlag = do
+    --print("olha o powerup vindo ae")
     atomically $ do         
+        writeTVar newFlag True
         spawnFlag <- readTVar flag
         if spawnFlag 
-            then writeTVar pu (PUI (-100,-50) BigBar)
-            else writeTVar pu (PUI (100,-50) BigBar)
+            then writeTVar pu (PUI (-100,0) FastBall)
+            else writeTVar pu (PUI (100,0) SlowBall)
         writeTVar flag (not spawnFlag)
     threadDelay 10000000
-    powerUpMonitor pu flag
+    powerUpMonitor pu flag newFlag
 
         
 main :: IO ()
 main = do 
     powerUpSpawnFlag <- atomically $ newTVar (False)
+    newPowerUpFlag <- atomically $ newTVar (True)
 
     bl1 <- atomically $ newTVar (map genBlock1 [0..29])
     pu <- atomically $ newTVar (initializePowerUps)
-    let iState = initialState bl1 pu
+
+    let iState = initialState bl1 pu newPowerUpFlag
     
-    forkIO $ powerUpMonitor pu powerUpSpawnFlag
+    forkIO $ powerUpMonitor pu powerUpSpawnFlag newPowerUpFlag
 
     playIO window background fps iState render handleKeys update
 

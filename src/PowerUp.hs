@@ -11,7 +11,7 @@ data PowerUpEnum = None | BigBar | SmallBar | FastBall | SlowBall deriving Eq
 data PowerUp = PUI Position PowerUpEnum
 
 powerUpSpeed :: Float
-powerUpSpeed = 30
+powerUpSpeed = 150
 
 powerUpSize :: Float
 powerUpSize = 5
@@ -31,7 +31,7 @@ movePowerUp segundos (PUI (xi, yi) typePower) = (xf, yf)
         yf = yi - powerUpSpeed * segundos
 
 initializePowerUps :: PowerUp
-initializePowerUps = PUI (0,0) BigBar
+initializePowerUps = PUI (-500,0) BigBar
 
 getPowerUpType :: PowerUp -> PowerUpEnum
 getPowerUpType (PUI a b) = b

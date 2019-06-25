@@ -20,13 +20,14 @@ data GameStatus = Game
     , isPaused  :: Bool     
     , blocks    :: TVar Blocks   -- blocks on screen
     , powerUp  :: TVar PowerUp
+    , newPUFlag :: TVar Bool
     , gameStat  :: Int      -- game status: 0 - in game, 1 = victory, -1 = loss.  
     , gameLevel :: Int -- Current level of the game  
     }
 
 -- initial game state
-initialState :: TVar Blocks -> TVar PowerUp -> GameStatus
-initialState b1 pu = Game
+initialState :: TVar Blocks -> TVar PowerUp -> TVar Bool -> GameStatus
+initialState b1 pu newFlag = Game
     { ballLoc   = (0 , -100)
     , ballVel   = ballVelocity
     , playerLoc = 0
@@ -35,6 +36,7 @@ initialState b1 pu = Game
     , isPaused  = True
     , blocks    = b1
     , powerUp   = pu
+    , newPUFlag = newFlag
     , gameStat  = 0
     , gameLevel = 1
     }
@@ -54,14 +56,24 @@ updateBall seconds game = return $ game { ballLoc = moveBall seconds pos v }
     where pos = ballLoc game
           v   = ballVel game
 
+-- Checks if picked pickup, and if so, applies effect (changes ball speed)
+-- it would be nice to be able to make it extend paddle size
 updatePowerUp :: Float -> GameStatus -> IO (GameStatus)
 updatePowerUp seconds game = do
-    aux <- atomically $ readTVar $ powerUp game
-    atomically $ writeTVar (powerUp game) (PUI (movePowerUp seconds aux) (getPowerUpType aux))
-    if (pickedUpPowerUP seconds (playerLoc game) aux) 
-        then return $ game { ballVel = ballVelocity2 }
-        else return $ game 
-          
+    atomically $ do
+        aux <- readTVar $ powerUp game
+        writeTVar (powerUp game) (PUI (movePowerUp seconds aux) (getPowerUpType aux))
+        firstHit <- readTVar $ newPUFlag game
+        if (firstHit == True) then do
+            if (pickedUpPowerUP seconds (playerLoc game) aux) then do
+                writeTVar (newPUFlag game) (False)
+                if (getPowerUpType aux) == FastBall then
+                    return game { ballVel = (fastenBall (ballVel game)) }
+                    else 
+                    return game { ballVel = (slowBall (ballVel game)) }
+                else return game 
+        else return game
+
 updatePlayer :: Float -> GameStatus -> IO (GameStatus)
 updatePlayer seconds game = return $ game { playerLoc = movePlayer seconds x v }
     where x = playerLoc game
@@ -120,7 +132,7 @@ nextState :: GameStatus -> Int -> IO(GameStatus)
 nextState game currentLevel= do
     if (currentLevel==1) then do
         atomically $ do
-            writeTVar (blocks game) (map genBlock1 [0..59])
+            writeTVar (blocks game) (map genBlock1 [0..49])
             return ()
         return ( game 
             { ballLoc   = (0, -100)
@@ -134,7 +146,7 @@ nextState game currentLevel= do
             } )
     else do
         atomically $ do
-            writeTVar (blocks game) (map genBlock1 [0..59])
+            writeTVar (blocks game) (map genBlock1 [0..49])
             return ()
         return ( game 
             { ballLoc   = (0, -100)
