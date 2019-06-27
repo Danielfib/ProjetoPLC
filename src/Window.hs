@@ -50,6 +50,7 @@ renderTxt col msg = translate (-100) 180 $ scale 0.2 0.2 $ color col $ Text msg
 curMsg :: Int -> Bool -> Int-> Picture
 curMsg (-1) paused _ = lostMsg 1
 curMsg   1  paused 3 = winMsg 1
+curMsg _ _ 4 = winMsg 1
 curMsg 0 True 1 = pauseMsg True
 curMsg 0 paused 1 = winMsg 2
 curMsg 0 paused 2 = winMsg 3

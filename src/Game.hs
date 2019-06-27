@@ -68,9 +68,9 @@ updatePowerUp seconds game = do
             if (pickedUpPowerUP seconds (playerLoc game) aux) then do
                 writeTVar (newPUFlag game) (False)
                 if (getPowerUpType aux) == FastBall then
-                    return game { ballVel = (fastenBall (ballVel game)) }
+                    return game { ballVel = (incrementBallVel (ballVel game)) }
                     else 
-                    return game { ballVel = (slowBall (ballVel game)) }
+                    return game { ballVel = (decrementBallVel (ballVel game)) }
                 else return game 
         else return game
 
@@ -144,7 +144,7 @@ nextState game currentLevel= do
             , gameStat  = 0
             , gameLevel = succ(currentLevel)
             } )
-    else do
+    else if (currentLevel==2) then do
         atomically $ do
             writeTVar (blocks game) (map genBlock1 [0..49])
             return ()
@@ -158,6 +158,21 @@ nextState game currentLevel= do
             , gameStat  = 0
             , gameLevel = succ(currentLevel)
             } )
+    else do
+        atomically $ do
+            writeTVar (blocks game) (map genBlock1 [0..49])
+            return ()
+        return ( game 
+            { ballLoc   = (0, -100)
+            , ballVel   = ballVelocity2
+            , playerLoc = 0
+            , playerVel = 0
+            , playerAcc = playerAcceleration
+            , isPaused  = True
+            , gameStat  = 0
+            , gameLevel = 4
+            } )
+    
 
 
 handleKeys :: Event -> GameStatus -> IO (GameStatus)
